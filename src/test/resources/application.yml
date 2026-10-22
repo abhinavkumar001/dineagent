@@ -1,0 +1,11 @@
+app:
+  llm:
+    provider: offline
+    gemini:
+      api-key: ""
+      model: gemini-2.5-flash
+      embedding-model: gemini-embedding-001
+      timeout-seconds: 5
+  agent:
+    max-steps: 6
+  timezone: Asia/Kolkata
