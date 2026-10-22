@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { wikiPhoto } from "../photos.js";
 
 /**
  * Drawn top-down food illustrations, one style per kind of dish, so every dish has a picture
@@ -256,12 +257,43 @@ export function DishArt({ item, className = "" }) {
 }
 
 /** Real photo if /images/<id>.jpg exists, otherwise the drawn illustration. */
+/**
+ * Picks the best available picture for a dish:
+ *   1. your own photo at /images/<itemId>.jpg
+ *   2. the dish's Wikipedia photo (free licence, see photos.js)
+ *   3. the drawn illustration
+ */
 export function DishImage({ item, className = "" }) {
-  const [failed, setFailed] = useState(false);
-  // The hosted preview has no photo folder; skip the request there.
-  if (failed || !item.id || window.__DINEAGENT_NO_PHOTOS__) return <DishArt item={item} className={className} />;
+  const [stage, setStage] = useState("local");
+  const [photo, setPhoto] = useState(null);
+
+  useEffect(() => {
+    setStage("local");
+    setPhoto(null);
+  }, [item.id]);
+
+  useEffect(() => {
+    if (stage !== "wiki") return;
+    let alive = true;
+    wikiPhoto(item.id).then((p) => {
+      if (!alive) return;
+      if (p) setPhoto(p);
+      else setStage("art");
+    });
+    return () => { alive = false; };
+  }, [stage, item.id]);
+
+  // The hosted preview can't load outside images; it shows illustrations only.
+  if (!item.id || stage === "art" || window.__DINEAGENT_NO_PHOTOS__) {
+    return <DishArt item={item} className={className} />;
+  }
+  if (stage === "local") {
+    return <img className={`dish-photo ${className}`} src={`/images/${item.id}.jpg`} alt={item.name}
+                loading="lazy" onError={() => setStage("wiki")} />;
+  }
+  if (!photo) return <DishArt item={item} className={className} />; // while the photo loads
   return (
-    <img className={`dish-photo ${className}`} src={`/images/${item.id}.jpg`} alt={item.name}
-         loading="lazy" onError={() => setFailed(true)} />
+    <img className={`dish-photo ${className}`} src={photo.src} alt={item.name} title={`Photo: ${photo.credit}`}
+         loading="lazy" referrerPolicy="no-referrer" onError={() => setStage("art")} />
   );
 }

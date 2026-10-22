@@ -241,3 +241,6 @@ h1, h2, h3, p { margin: 0; }
 .live-steps li.err::before { content: "! "; color: var(--chilli); }
 .live-steps li.pending::before { content: "… "; color: var(--turmeric); }
 @media (prefers-reduced-motion: reduce) { .live-dot::before { animation: none; } .rider, .route-fill { transition: none; } }
+
+.site-footer { max-width: 1200px; margin: 0 auto; padding: 24px 20px 110px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; display: grid; gap: 4px; }
+.site-footer b { color: var(--ink); }

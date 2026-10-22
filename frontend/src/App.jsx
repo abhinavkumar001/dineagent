@@ -105,6 +105,11 @@ export default function App() {
     <>
       <Header cart={cart} info={info} onAssistant={() => setAssistantOpen(true)} />
       <main className="page">{page}</main>
+      <footer className="site-footer">
+        <p><b>DineAgent</b> · a portfolio project, not a real delivery service.</p>
+        <p>Dish photos come from Wikipedia and Wikimedia Commons under free licences; hover a photo to see its source.
+          Dishes without a suitable photo show an illustration.</p>
+      </footer>
 
       {cart?.count > 0 && route.page !== "cart" && (
         <a className="cart-bar" href="#/cart">
