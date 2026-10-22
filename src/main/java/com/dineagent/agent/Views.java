@@ -3,6 +3,7 @@ package com.dineagent.agent;
 import com.dineagent.cart.Cart;
 import com.dineagent.cart.CartLine;
 import com.dineagent.order.Order;
+import com.dineagent.order.OrderService;
 
 import java.time.Clock;
 import java.util.LinkedHashMap;
@@ -22,7 +23,14 @@ public final class Views {
         m.put("items", lines.stream().map(l -> Map.of(
                 "itemId", l.itemId(), "name", l.name(), "quantity", l.quantity(),
                 "unitPrice", l.unitPrice(), "lineTotal", l.lineTotal())).toList());
-        m.put("itemTotal", cart.total());
+        int total = cart.total();
+        int fee = total == 0 || total >= OrderService.FREE_DELIVERY_ABOVE ? 0 : OrderService.DELIVERY_FEE;
+        m.put("restaurantId", lines.isEmpty() ? null : lines.get(0).restaurantId());
+        m.put("itemTotal", total);
+        m.put("deliveryFee", fee);
+        m.put("toPay", total + fee);
+        m.put("freeDeliveryGap", total == 0 ? 0 : Math.max(0, OrderService.FREE_DELIVERY_ABOVE - total));
+        m.put("count", lines.stream().mapToInt(CartLine::quantity).sum());
         return m;
     }
 
@@ -31,6 +39,8 @@ public final class Views {
         m.put("orderId", o.id());
         m.put("restaurant", o.restaurantName());
         m.put("items", o.lines().stream().map(l -> l.quantity() + " x " + l.name()).toList());
+        m.put("placedAt", o.placedAt().toString());
+        m.put("etaMinutes", o.etaMinutes());
         m.put("itemTotal", o.itemTotal());
         m.put("deliveryFee", o.deliveryFee());
         m.put("total", o.total());

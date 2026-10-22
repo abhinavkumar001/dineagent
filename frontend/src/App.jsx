@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api } from "./api.js";
-import ChatPanel from "./components/ChatPanel.jsx";
-import CartPanel from "./components/CartPanel.jsx";
-import OrderPanel from "./components/OrderPanel.jsx";
-import TracePanel from "./components/TracePanel.jsx";
-import EvalPanel from "./components/EvalPanel.jsx";
+import Header from "./components/Header.jsx";
+import Home from "./components/Home.jsx";
+import RestaurantPage from "./components/RestaurantPage.jsx";
+import SearchPage from "./components/SearchPage.jsx";
+import CartPage from "./components/CartPage.jsx";
+import OrderPage from "./components/OrderPage.jsx";
+import OrdersPage from "./components/OrdersPage.jsx";
+import Assistant from "./components/Assistant.jsx";
 
 const SESSION_KEY = "dineagent.session";
 
@@ -18,76 +21,90 @@ function loadSessionId() {
   return id;
 }
 
+/** Tiny hash router: #/, #/restaurant/r1, #/search?q=…, #/cart, #/orders, #/order/DA1001 */
+function parseRoute() {
+  const [path, query = ""] = window.location.hash.replace(/^#/, "").split("?");
+  const parts = path.split("/").filter(Boolean);
+  return { page: parts[0] || "home", id: parts[1], params: Object.fromEntries(new URLSearchParams(query)) };
+}
+
 export default function App() {
-  const [sessionId, setSessionId] = useState(loadSessionId);
-  const [info, setInfo] = useState(null);
-  const [infoError, setInfoError] = useState("");
-  const [messages, setMessages] = useState([]); // { from: "me" | "bot", text, dishes? }
+  const [sessionId] = useState(loadSessionId);
+  const [route, setRoute] = useState(parseRoute);
   const [cart, setCart] = useState(null);
-  const [order, setOrder] = useState(null);
-  const [lastRun, setLastRun] = useState(null);
-  const [busy, setBusy] = useState(false);
+  const [info, setInfo] = useState(null);
+  const [assistantOpen, setAssistantOpen] = useState(false);
+  const [assistantSeed, setAssistantSeed] = useState(null);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    api.info().then(setInfo).catch((e) => setInfoError(e.message));
+    const onHash = () => { setRoute(parseRoute()); window.scrollTo(0, 0); };
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
   useEffect(() => {
-    api.session(sessionId).then((s) => { setCart(s.cart); setOrder(s.order); }).catch(() => {});
+    api.info().then(setInfo).catch(() => setInfo({ offline: true }));
+    api.cart(sessionId).then(setCart).catch(() => {});
   }, [sessionId]);
 
-  const send = async (text) => {
-    const message = text.trim();
-    if (!message || busy) return;
-    setMessages((m) => [...m, { from: "me", text: message }]);
-    setBusy(true);
-    try {
-      const r = await api.chat(sessionId, message);
-      const search = [...r.toolResults].reverse().find((t) => t.tool === "search_menu");
-      setMessages((m) => [...m, { from: "bot", text: r.reply, dishes: search?.result?.dishes ?? [] }]);
-      setCart(r.cart);
-      setOrder(r.order);
-      setLastRun(r);
-    } catch (e) {
-      setMessages((m) => [...m, { from: "bot", text: e.message, error: true }]);
-    } finally {
-      setBusy(false);
-    }
+  const notify = useCallback((text, kind = "ok") => {
+    setToast({ text, kind, at: Date.now() });
+    setTimeout(() => setToast((t) => (t && Date.now() - t.at >= 2900 ? null : t)), 3000);
+  }, []);
+
+  const cartActions = {
+    add: async (item) => {
+      try { setCart(await api.addToCart(sessionId, item.id)); notify(`${item.name} added`); }
+      catch (e) { notify(e.message, "error"); }
+    },
+    setQuantity: async (itemId, quantity) => {
+      try { setCart(await api.setQuantity(sessionId, itemId, quantity)); }
+      catch (e) { notify(e.message, "error"); }
+    },
+    clear: async () => {
+      try { setCart(await api.clearCart(sessionId)); } catch (e) { notify(e.message, "error"); }
+    },
+    quantityOf: (itemId) => cart?.items?.find((i) => i.itemId === itemId)?.quantity ?? 0,
   };
 
-  const newChat = () => {
-    const id = crypto.randomUUID();
-    try { localStorage.setItem(SESSION_KEY, id); } catch { /* storage unavailable */ }
-    setSessionId(id);
-    setMessages([]);
-    setCart(null);
-    setOrder(null);
-    setLastRun(null);
+  const askAssistant = (text) => {
+    setAssistantSeed({ text, at: Date.now() });
+    setAssistantOpen(true);
   };
+
+  const ctx = { sessionId, cart, cartActions, notify, askAssistant, setCart };
+  let page;
+  switch (route.page) {
+    case "restaurant": page = <RestaurantPage id={route.id} {...ctx} />; break;
+    case "search": page = <SearchPage query={route.params.q ?? ""} {...ctx} />; break;
+    case "cart": page = <CartPage {...ctx} />; break;
+    case "orders": page = <OrdersPage {...ctx} />; break;
+    case "order": page = <OrderPage orderId={route.id} {...ctx} />; break;
+    default: page = <Home {...ctx} />;
+  }
 
   return (
-    <div className="app">
-      <header className="bar">
-        <span className="logo">DineAgent</span>
-        <span className="status">
-          {infoError ? infoError
-            : !info ? "Connecting…"
-            : info.llmConfigured
-              ? <><b>{info.model}</b>, {info.semanticSearch ? "semantic + keyword search" : "keyword search"}, {info.dishes} dishes</>
-              : <><b>No model configured.</b> Set GEMINI_API_KEY and restart the backend.</>}
-        </span>
-        <span className="spacer" />
-        <button className="btn" onClick={newChat}>New chat</button>
-      </header>
+    <>
+      <Header cart={cart} info={info} onAssistant={() => setAssistantOpen(true)} />
+      <main className="page">{page}</main>
 
-      <ChatPanel messages={messages} busy={busy} onSend={send} />
+      {cart?.count > 0 && route.page !== "cart" && (
+        <a className="cart-bar" href="#/cart">
+          <span>{cart.count} item{cart.count > 1 ? "s" : ""} | {cart.restaurant}</span>
+          <b>View cart</b>
+        </a>
+      )}
 
-      <aside>
-        <CartPanel cart={cart} onReview={() => send("Show my cart and place the order")} />
-        <OrderPanel order={order} />
-        <TracePanel run={lastRun} />
-        <EvalPanel cases={info?.evalCases} />
-      </aside>
-    </div>
+      {!assistantOpen && (
+        <button className="ask-fab" onClick={() => setAssistantOpen(true)}>
+          <span aria-hidden="true">✦</span> Ask DineAgent
+        </button>
+      )}
+      <Assistant open={assistantOpen} seed={assistantSeed} sessionId={sessionId} info={info}
+                 onClose={() => setAssistantOpen(false)} onCart={setCart} />
+
+      {toast && <div className={`toast ${toast.kind}`} role="status">{toast.text}</div>}
+    </>
   );
 }

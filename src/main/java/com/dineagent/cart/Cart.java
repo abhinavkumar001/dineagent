@@ -43,6 +43,22 @@ public class Cart {
         return null;
     }
 
+    /** Sets the quantity of an item already in the cart; 0 removes it. Returns null or a reason it failed. */
+    public synchronized String setQuantity(String itemId, int quantity) {
+        CartLine line = lines.stream().filter(l -> l.itemId().equals(itemId)).findFirst().orElse(null);
+        if (line == null) return "Item is not in the cart.";
+        if (quantity <= 0) {
+            lines.remove(line);
+            return null;
+        }
+        if (quantity > MAX_QUANTITY) return "At most " + MAX_QUANTITY + " of one item per order.";
+        int newTotal = total() - line.lineTotal() + line.unitPrice() * quantity;
+        if (newTotal > MAX_TOTAL) return "Cart total can't exceed ₹" + MAX_TOTAL + " in one order.";
+        lines.set(lines.indexOf(line), new CartLine(line.itemId(), line.name(), line.restaurantId(),
+                line.restaurantName(), line.unitPrice(), quantity));
+        return null;
+    }
+
     public synchronized boolean remove(String itemId) {
         return lines.removeIf(l -> l.itemId().equals(itemId));
     }

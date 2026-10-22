@@ -1,57 +1,638 @@
 {
-  "restaurants": [
-    {"id": "r1", "name": "Spice Route", "cuisine": "North Indian", "area": "Koramangala", "rating": 4.4, "deliveryMinutes": 32, "pureVeg": false},
-    {"id": "r2", "name": "Green Leaf Kitchen", "cuisine": "Healthy", "area": "Indiranagar", "rating": 4.6, "deliveryMinutes": 25, "pureVeg": true},
-    {"id": "r3", "name": "Chettinad Express", "cuisine": "South Indian", "area": "HSR Layout", "rating": 4.3, "deliveryMinutes": 28, "pureVeg": false},
-    {"id": "r4", "name": "Udupi Upahar", "cuisine": "South Indian", "area": "Jayanagar", "rating": 4.5, "deliveryMinutes": 20, "pureVeg": true},
-    {"id": "r5", "name": "Dragon Wok", "cuisine": "Chinese", "area": "Koramangala", "rating": 4.1, "deliveryMinutes": 35, "pureVeg": false},
-    {"id": "r6", "name": "Napoli Slice", "cuisine": "Italian", "area": "Indiranagar", "rating": 4.2, "deliveryMinutes": 30, "pureVeg": false},
-    {"id": "r7", "name": "Biryani Bros", "cuisine": "Biryani", "area": "BTM Layout", "rating": 4.4, "deliveryMinutes": 38, "pureVeg": false},
-    {"id": "r8", "name": "Sweet Tooth", "cuisine": "Desserts", "area": "Koramangala", "rating": 4.7, "deliveryMinutes": 22, "pureVeg": true}
-  ],
-  "items": [
-    {"id": "i101", "restaurantId": "r1", "name": "Paneer Tikka Masala", "description": "Char-grilled cottage cheese in a smoky, spicy tomato gravy", "price": 260, "veg": true, "spiceLevel": 2, "tags": ["paneer", "curry", "spicy", "dinner"]},
-    {"id": "i102", "restaurantId": "r1", "name": "Dal Makhani", "description": "Slow-cooked black lentils with butter and cream, rich and mild", "price": 210, "veg": true, "spiceLevel": 1, "tags": ["dal", "comfort food", "creamy"]},
-    {"id": "i103", "restaurantId": "r1", "name": "Butter Chicken", "description": "Tandoori chicken in a buttery, mildly sweet tomato gravy", "price": 320, "veg": false, "spiceLevel": 1, "tags": ["chicken", "curry", "creamy", "dinner"]},
-    {"id": "i104", "restaurantId": "r1", "name": "Chicken Seekh Kebab", "description": "Minced chicken skewers with green chilli and herbs", "price": 290, "veg": false, "spiceLevel": 3, "tags": ["kebab", "starter", "spicy", "high protein"]},
-    {"id": "i105", "restaurantId": "r1", "name": "Garlic Naan", "description": "Soft tandoor bread brushed with garlic butter", "price": 70, "veg": true, "spiceLevel": 0, "tags": ["bread", "side"]},
-    {"id": "i106", "restaurantId": "r1", "name": "Chole Bhature", "description": "Spicy chickpea curry with two fluffy fried breads", "price": 180, "veg": true, "spiceLevel": 2, "tags": ["chole", "heavy", "lunch", "spicy"]},
-
-    {"id": "i201", "restaurantId": "r2", "name": "Quinoa Buddha Bowl", "description": "Quinoa, roasted veggies, chickpeas and tahini dressing, light and filling", "price": 290, "veg": true, "spiceLevel": 0, "tags": ["healthy", "light", "high protein", "salad"]},
-    {"id": "i202", "restaurantId": "r2", "name": "Greek Salad", "description": "Cucumber, tomato, olives and feta with lemon dressing", "price": 240, "veg": true, "spiceLevel": 0, "tags": ["salad", "light", "low calorie"]},
-    {"id": "i203", "restaurantId": "r2", "name": "Tomato Basil Soup", "description": "Warm roasted tomato soup with basil, light dinner option", "price": 160, "veg": true, "spiceLevel": 0, "tags": ["soup", "light", "low calorie", "dinner"]},
-    {"id": "i204", "restaurantId": "r2", "name": "Spicy Peri Peri Tofu Wrap", "description": "Grilled tofu with peri peri sauce and crunchy slaw in a whole wheat wrap", "price": 220, "veg": true, "spiceLevel": 2, "tags": ["wrap", "spicy", "high protein", "vegan"]},
-    {"id": "i205", "restaurantId": "r2", "name": "Mango Smoothie Bowl", "description": "Mango, banana and yoghurt topped with granola and seeds", "price": 199, "veg": true, "spiceLevel": 0, "tags": ["breakfast", "sweet", "healthy"]},
-
-    {"id": "i301", "restaurantId": "r3", "name": "Chettinad Chicken Curry", "description": "Fiery chicken curry with black pepper and roasted coconut", "price": 300, "veg": false, "spiceLevel": 3, "tags": ["chicken", "curry", "very spicy"]},
-    {"id": "i302", "restaurantId": "r3", "name": "Kerala Parotta", "description": "Flaky layered flatbread", "price": 60, "veg": true, "spiceLevel": 0, "tags": ["bread", "side"]},
-    {"id": "i303", "restaurantId": "r3", "name": "Mushroom Pepper Fry", "description": "Mushrooms tossed with crushed pepper, curry leaves and onion, hot and spicy", "price": 230, "veg": true, "spiceLevel": 3, "tags": ["mushroom", "spicy", "dry"]},
-    {"id": "i304", "restaurantId": "r3", "name": "Fish Fry", "description": "Seer fish marinated in red chilli masala and pan fried", "price": 380, "veg": false, "spiceLevel": 2, "tags": ["fish", "seafood", "starter"]},
-
-    {"id": "i401", "restaurantId": "r4", "name": "Masala Dosa", "description": "Crispy rice crepe with spiced potato, sambar and chutney", "price": 110, "veg": true, "spiceLevel": 1, "tags": ["dosa", "breakfast", "light", "budget"]},
-    {"id": "i402", "restaurantId": "r4", "name": "Idli Vada Combo", "description": "Two soft idlis and a crispy vada with sambar and chutney", "price": 95, "veg": true, "spiceLevel": 0, "tags": ["idli", "breakfast", "light", "budget"]},
-    {"id": "i403", "restaurantId": "r4", "name": "Bisi Bele Bath", "description": "Karnataka style spicy lentil rice with ghee and boondi", "price": 140, "veg": true, "spiceLevel": 2, "tags": ["rice", "comfort food", "spicy", "lunch"]},
-    {"id": "i404", "restaurantId": "r4", "name": "Filter Coffee", "description": "Strong South Indian coffee with frothy milk", "price": 45, "veg": true, "spiceLevel": 0, "tags": ["coffee", "drink"]},
-    {"id": "i405", "restaurantId": "r4", "name": "Mysore Masala Dosa", "description": "Dosa with fiery red chutney and potato filling", "price": 130, "veg": true, "spiceLevel": 2, "tags": ["dosa", "spicy", "budget"]},
-
-    {"id": "i501", "restaurantId": "r5", "name": "Veg Hakka Noodles", "description": "Wok tossed noodles with vegetables and soy", "price": 190, "veg": true, "spiceLevel": 1, "tags": ["noodles", "chinese"]},
-    {"id": "i502", "restaurantId": "r5", "name": "Chilli Paneer Dry", "description": "Crispy paneer tossed with green chilli, capsicum and soy, spicy", "price": 240, "veg": true, "spiceLevel": 3, "tags": ["paneer", "starter", "spicy", "indo chinese"]},
-    {"id": "i503", "restaurantId": "r5", "name": "Schezwan Fried Rice", "description": "Fried rice in hot schezwan sauce", "price": 210, "veg": true, "spiceLevel": 3, "tags": ["rice", "spicy", "indo chinese"]},
-    {"id": "i504", "restaurantId": "r5", "name": "Chicken Manchurian", "description": "Fried chicken balls in tangy garlic sauce", "price": 260, "veg": false, "spiceLevel": 2, "tags": ["chicken", "starter", "indo chinese"]},
-    {"id": "i505", "restaurantId": "r5", "name": "Veg Momos", "description": "Steamed dumplings with spicy red chutney", "price": 150, "veg": true, "spiceLevel": 1, "tags": ["momos", "snack", "budget"]},
-
-    {"id": "i601", "restaurantId": "r6", "name": "Margherita Pizza", "description": "Tomato, mozzarella and fresh basil on a thin crust", "price": 299, "veg": true, "spiceLevel": 0, "tags": ["pizza", "cheesy"]},
-    {"id": "i602", "restaurantId": "r6", "name": "Pepperoni Pizza", "description": "Spicy pepperoni with mozzarella", "price": 449, "veg": false, "spiceLevel": 1, "tags": ["pizza", "pork"]},
-    {"id": "i603", "restaurantId": "r6", "name": "Penne Arrabbiata", "description": "Penne in spicy tomato and chilli sauce", "price": 280, "veg": true, "spiceLevel": 2, "tags": ["pasta", "spicy"]},
-    {"id": "i604", "restaurantId": "r6", "name": "Garlic Bread", "description": "Toasted bread with garlic butter and herbs", "price": 140, "veg": true, "spiceLevel": 0, "tags": ["bread", "side", "snack"]},
-
-    {"id": "i701", "restaurantId": "r7", "name": "Hyderabadi Chicken Biryani", "description": "Dum cooked basmati rice with spiced chicken and fried onions", "price": 330, "veg": false, "spiceLevel": 2, "tags": ["biryani", "chicken", "rice", "dinner"]},
-    {"id": "i702", "restaurantId": "r7", "name": "Veg Dum Biryani", "description": "Fragrant basmati rice layered with vegetables and spices", "price": 250, "veg": true, "spiceLevel": 2, "tags": ["biryani", "rice", "spicy"]},
-    {"id": "i703", "restaurantId": "r7", "name": "Mutton Biryani", "description": "Slow cooked mutton with long grain rice and saffron", "price": 420, "veg": false, "spiceLevel": 2, "tags": ["biryani", "mutton", "rice"]},
-    {"id": "i704", "restaurantId": "r7", "name": "Raita", "description": "Cool yoghurt with cucumber and mint", "price": 50, "veg": true, "spiceLevel": 0, "tags": ["side", "cooling"]},
-
-    {"id": "i801", "restaurantId": "r8", "name": "Gulab Jamun (2 pcs)", "description": "Warm milk dumplings soaked in rose sugar syrup", "price": 90, "veg": true, "spiceLevel": 0, "tags": ["dessert", "sweet", "indian"]},
-    {"id": "i802", "restaurantId": "r8", "name": "Chocolate Brownie", "description": "Fudgy brownie with chocolate sauce", "price": 150, "veg": true, "spiceLevel": 0, "tags": ["dessert", "sweet", "chocolate"]},
-    {"id": "i803", "restaurantId": "r8", "name": "Rasmalai (2 pcs)", "description": "Soft paneer discs in saffron cardamom milk", "price": 130, "veg": true, "spiceLevel": 0, "tags": ["dessert", "sweet", "indian"]}
-  ]
+ "restaurants": [
+  {
+   "id": "r1",
+   "name": "Spice Route",
+   "cuisine": "North Indian",
+   "area": "Koramangala",
+   "rating": 4.4,
+   "deliveryMinutes": 32,
+   "pureVeg": false,
+   "costForTwo": 500,
+   "offer": "20% off up to ₹100"
+  },
+  {
+   "id": "r2",
+   "name": "Green Leaf Kitchen",
+   "cuisine": "Healthy",
+   "area": "Indiranagar",
+   "rating": 4.6,
+   "deliveryMinutes": 25,
+   "pureVeg": true,
+   "costForTwo": 450,
+   "offer": "Free delivery"
+  },
+  {
+   "id": "r3",
+   "name": "Chettinad Express",
+   "cuisine": "South Indian",
+   "area": "HSR Layout",
+   "rating": 4.3,
+   "deliveryMinutes": 28,
+   "pureVeg": false,
+   "costForTwo": 550,
+   "offer": null
+  },
+  {
+   "id": "r4",
+   "name": "Udupi Upahar",
+   "cuisine": "South Indian",
+   "area": "Jayanagar",
+   "rating": 4.5,
+   "deliveryMinutes": 20,
+   "pureVeg": true,
+   "costForTwo": 250,
+   "offer": "Flat ₹50 off above ₹299"
+  },
+  {
+   "id": "r5",
+   "name": "Dragon Wok",
+   "cuisine": "Chinese",
+   "area": "Koramangala",
+   "rating": 4.1,
+   "deliveryMinutes": 35,
+   "pureVeg": false,
+   "costForTwo": 400,
+   "offer": null
+  },
+  {
+   "id": "r6",
+   "name": "Napoli Slice",
+   "cuisine": "Italian",
+   "area": "Indiranagar",
+   "rating": 4.2,
+   "deliveryMinutes": 30,
+   "pureVeg": false,
+   "costForTwo": 600,
+   "offer": null
+  },
+  {
+   "id": "r7",
+   "name": "Biryani Bros",
+   "cuisine": "Biryani",
+   "area": "BTM Layout",
+   "rating": 4.4,
+   "deliveryMinutes": 38,
+   "pureVeg": false,
+   "costForTwo": 600,
+   "offer": "₹125 off above ₹499"
+  },
+  {
+   "id": "r8",
+   "name": "Sweet Tooth",
+   "cuisine": "Desserts",
+   "area": "Koramangala",
+   "rating": 4.7,
+   "deliveryMinutes": 22,
+   "pureVeg": true,
+   "costForTwo": 300,
+   "offer": "Buy 1 get 1 on brownies"
+  }
+ ],
+ "items": [
+  {
+   "id": "i101",
+   "restaurantId": "r1",
+   "name": "Paneer Tikka Masala",
+   "description": "Char-grilled cottage cheese in a smoky, spicy tomato gravy",
+   "price": 260,
+   "veg": true,
+   "spiceLevel": 2,
+   "tags": [
+    "paneer",
+    "curry",
+    "spicy",
+    "dinner"
+   ],
+   "category": "Main Course"
+  },
+  {
+   "id": "i102",
+   "restaurantId": "r1",
+   "name": "Dal Makhani",
+   "description": "Slow-cooked black lentils with butter and cream, rich and mild",
+   "price": 210,
+   "veg": true,
+   "spiceLevel": 1,
+   "tags": [
+    "dal",
+    "comfort food",
+    "creamy"
+   ],
+   "category": "Main Course"
+  },
+  {
+   "id": "i103",
+   "restaurantId": "r1",
+   "name": "Butter Chicken",
+   "description": "Tandoori chicken in a buttery, mildly sweet tomato gravy",
+   "price": 320,
+   "veg": false,
+   "spiceLevel": 1,
+   "tags": [
+    "chicken",
+    "curry",
+    "creamy",
+    "dinner"
+   ],
+   "category": "Main Course"
+  },
+  {
+   "id": "i104",
+   "restaurantId": "r1",
+   "name": "Chicken Seekh Kebab",
+   "description": "Minced chicken skewers with green chilli and herbs",
+   "price": 290,
+   "veg": false,
+   "spiceLevel": 3,
+   "tags": [
+    "kebab",
+    "starter",
+    "spicy",
+    "high protein"
+   ],
+   "category": "Starters"
+  },
+  {
+   "id": "i105",
+   "restaurantId": "r1",
+   "name": "Garlic Naan",
+   "description": "Soft tandoor bread brushed with garlic butter",
+   "price": 70,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "bread",
+    "side"
+   ],
+   "category": "Breads & Sides"
+  },
+  {
+   "id": "i106",
+   "restaurantId": "r1",
+   "name": "Chole Bhature",
+   "description": "Spicy chickpea curry with two fluffy fried breads",
+   "price": 180,
+   "veg": true,
+   "spiceLevel": 2,
+   "tags": [
+    "chole",
+    "heavy",
+    "lunch",
+    "spicy"
+   ],
+   "category": "Main Course"
+  },
+  {
+   "id": "i201",
+   "restaurantId": "r2",
+   "name": "Quinoa Buddha Bowl",
+   "description": "Quinoa, roasted veggies, chickpeas and tahini dressing, light and filling",
+   "price": 290,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "healthy",
+    "light",
+    "high protein",
+    "salad"
+   ],
+   "category": "Salads, Soups & Wraps"
+  },
+  {
+   "id": "i202",
+   "restaurantId": "r2",
+   "name": "Greek Salad",
+   "description": "Cucumber, tomato, olives and feta with lemon dressing",
+   "price": 240,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "salad",
+    "light",
+    "low calorie"
+   ],
+   "category": "Salads, Soups & Wraps"
+  },
+  {
+   "id": "i203",
+   "restaurantId": "r2",
+   "name": "Tomato Basil Soup",
+   "description": "Warm roasted tomato soup with basil, light dinner option",
+   "price": 160,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "soup",
+    "light",
+    "low calorie",
+    "dinner"
+   ],
+   "category": "Salads, Soups & Wraps"
+  },
+  {
+   "id": "i204",
+   "restaurantId": "r2",
+   "name": "Spicy Peri Peri Tofu Wrap",
+   "description": "Grilled tofu with peri peri sauce and crunchy slaw in a whole wheat wrap",
+   "price": 220,
+   "veg": true,
+   "spiceLevel": 2,
+   "tags": [
+    "wrap",
+    "spicy",
+    "high protein",
+    "vegan"
+   ],
+   "category": "Salads, Soups & Wraps"
+  },
+  {
+   "id": "i205",
+   "restaurantId": "r2",
+   "name": "Mango Smoothie Bowl",
+   "description": "Mango, banana and yoghurt topped with granola and seeds",
+   "price": 199,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "breakfast",
+    "sweet",
+    "healthy"
+   ],
+   "category": "Breakfast"
+  },
+  {
+   "id": "i301",
+   "restaurantId": "r3",
+   "name": "Chettinad Chicken Curry",
+   "description": "Fiery chicken curry with black pepper and roasted coconut",
+   "price": 300,
+   "veg": false,
+   "spiceLevel": 3,
+   "tags": [
+    "chicken",
+    "curry",
+    "very spicy"
+   ],
+   "category": "Main Course"
+  },
+  {
+   "id": "i302",
+   "restaurantId": "r3",
+   "name": "Kerala Parotta",
+   "description": "Flaky layered flatbread",
+   "price": 60,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "bread",
+    "side"
+   ],
+   "category": "Breads & Sides"
+  },
+  {
+   "id": "i303",
+   "restaurantId": "r3",
+   "name": "Mushroom Pepper Fry",
+   "description": "Mushrooms tossed with crushed pepper, curry leaves and onion, hot and spicy",
+   "price": 230,
+   "veg": true,
+   "spiceLevel": 3,
+   "tags": [
+    "mushroom",
+    "spicy",
+    "dry"
+   ],
+   "category": "Main Course"
+  },
+  {
+   "id": "i304",
+   "restaurantId": "r3",
+   "name": "Fish Fry",
+   "description": "Seer fish marinated in red chilli masala and pan fried",
+   "price": 380,
+   "veg": false,
+   "spiceLevel": 2,
+   "tags": [
+    "fish",
+    "seafood",
+    "starter"
+   ],
+   "category": "Starters"
+  },
+  {
+   "id": "i401",
+   "restaurantId": "r4",
+   "name": "Masala Dosa",
+   "description": "Crispy rice crepe with spiced potato, sambar and chutney",
+   "price": 110,
+   "veg": true,
+   "spiceLevel": 1,
+   "tags": [
+    "dosa",
+    "breakfast",
+    "light",
+    "budget"
+   ],
+   "category": "Breakfast"
+  },
+  {
+   "id": "i402",
+   "restaurantId": "r4",
+   "name": "Idli Vada Combo",
+   "description": "Two soft idlis and a crispy vada with sambar and chutney",
+   "price": 95,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "idli",
+    "breakfast",
+    "light",
+    "budget"
+   ],
+   "category": "Breakfast"
+  },
+  {
+   "id": "i403",
+   "restaurantId": "r4",
+   "name": "Bisi Bele Bath",
+   "description": "Karnataka style spicy lentil rice with ghee and boondi",
+   "price": 140,
+   "veg": true,
+   "spiceLevel": 2,
+   "tags": [
+    "rice",
+    "comfort food",
+    "spicy",
+    "lunch"
+   ],
+   "category": "Rice, Noodles & Pizza"
+  },
+  {
+   "id": "i404",
+   "restaurantId": "r4",
+   "name": "Filter Coffee",
+   "description": "Strong South Indian coffee with frothy milk",
+   "price": 45,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "coffee",
+    "drink"
+   ],
+   "category": "Beverages"
+  },
+  {
+   "id": "i405",
+   "restaurantId": "r4",
+   "name": "Mysore Masala Dosa",
+   "description": "Dosa with fiery red chutney and potato filling",
+   "price": 130,
+   "veg": true,
+   "spiceLevel": 2,
+   "tags": [
+    "dosa",
+    "spicy",
+    "budget"
+   ],
+   "category": "Main Course"
+  },
+  {
+   "id": "i501",
+   "restaurantId": "r5",
+   "name": "Veg Hakka Noodles",
+   "description": "Wok tossed noodles with vegetables and soy",
+   "price": 190,
+   "veg": true,
+   "spiceLevel": 1,
+   "tags": [
+    "noodles",
+    "chinese"
+   ],
+   "category": "Rice, Noodles & Pizza"
+  },
+  {
+   "id": "i502",
+   "restaurantId": "r5",
+   "name": "Chilli Paneer Dry",
+   "description": "Crispy paneer tossed with green chilli, capsicum and soy, spicy",
+   "price": 240,
+   "veg": true,
+   "spiceLevel": 3,
+   "tags": [
+    "paneer",
+    "starter",
+    "spicy",
+    "indo chinese"
+   ],
+   "category": "Starters"
+  },
+  {
+   "id": "i503",
+   "restaurantId": "r5",
+   "name": "Schezwan Fried Rice",
+   "description": "Fried rice in hot schezwan sauce",
+   "price": 210,
+   "veg": true,
+   "spiceLevel": 3,
+   "tags": [
+    "rice",
+    "spicy",
+    "indo chinese"
+   ],
+   "category": "Rice, Noodles & Pizza"
+  },
+  {
+   "id": "i504",
+   "restaurantId": "r5",
+   "name": "Chicken Manchurian",
+   "description": "Fried chicken balls in tangy garlic sauce",
+   "price": 260,
+   "veg": false,
+   "spiceLevel": 2,
+   "tags": [
+    "chicken",
+    "starter",
+    "indo chinese"
+   ],
+   "category": "Starters"
+  },
+  {
+   "id": "i505",
+   "restaurantId": "r5",
+   "name": "Veg Momos",
+   "description": "Steamed dumplings with spicy red chutney",
+   "price": 150,
+   "veg": true,
+   "spiceLevel": 1,
+   "tags": [
+    "momos",
+    "snack",
+    "budget"
+   ],
+   "category": "Starters"
+  },
+  {
+   "id": "i601",
+   "restaurantId": "r6",
+   "name": "Margherita Pizza",
+   "description": "Tomato, mozzarella and fresh basil on a thin crust",
+   "price": 299,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "pizza",
+    "cheesy"
+   ],
+   "category": "Rice, Noodles & Pizza"
+  },
+  {
+   "id": "i602",
+   "restaurantId": "r6",
+   "name": "Pepperoni Pizza",
+   "description": "Spicy pepperoni with mozzarella",
+   "price": 449,
+   "veg": false,
+   "spiceLevel": 1,
+   "tags": [
+    "pizza",
+    "pork"
+   ],
+   "category": "Rice, Noodles & Pizza"
+  },
+  {
+   "id": "i603",
+   "restaurantId": "r6",
+   "name": "Penne Arrabbiata",
+   "description": "Penne in spicy tomato and chilli sauce",
+   "price": 280,
+   "veg": true,
+   "spiceLevel": 2,
+   "tags": [
+    "pasta",
+    "spicy"
+   ],
+   "category": "Rice, Noodles & Pizza"
+  },
+  {
+   "id": "i604",
+   "restaurantId": "r6",
+   "name": "Garlic Bread",
+   "description": "Toasted bread with garlic butter and herbs",
+   "price": 140,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "bread",
+    "side",
+    "snack"
+   ],
+   "category": "Breads & Sides"
+  },
+  {
+   "id": "i701",
+   "restaurantId": "r7",
+   "name": "Hyderabadi Chicken Biryani",
+   "description": "Dum cooked basmati rice with spiced chicken and fried onions",
+   "price": 330,
+   "veg": false,
+   "spiceLevel": 2,
+   "tags": [
+    "biryani",
+    "chicken",
+    "rice",
+    "dinner"
+   ],
+   "category": "Biryani"
+  },
+  {
+   "id": "i702",
+   "restaurantId": "r7",
+   "name": "Veg Dum Biryani",
+   "description": "Fragrant basmati rice layered with vegetables and spices",
+   "price": 250,
+   "veg": true,
+   "spiceLevel": 2,
+   "tags": [
+    "biryani",
+    "rice",
+    "spicy"
+   ],
+   "category": "Biryani"
+  },
+  {
+   "id": "i703",
+   "restaurantId": "r7",
+   "name": "Mutton Biryani",
+   "description": "Slow cooked mutton with long grain rice and saffron",
+   "price": 420,
+   "veg": false,
+   "spiceLevel": 2,
+   "tags": [
+    "biryani",
+    "mutton",
+    "rice"
+   ],
+   "category": "Biryani"
+  },
+  {
+   "id": "i704",
+   "restaurantId": "r7",
+   "name": "Raita",
+   "description": "Cool yoghurt with cucumber and mint",
+   "price": 50,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "side",
+    "cooling"
+   ],
+   "category": "Breads & Sides"
+  },
+  {
+   "id": "i801",
+   "restaurantId": "r8",
+   "name": "Gulab Jamun (2 pcs)",
+   "description": "Warm milk dumplings soaked in rose sugar syrup",
+   "price": 90,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "dessert",
+    "sweet",
+    "indian"
+   ],
+   "category": "Desserts"
+  },
+  {
+   "id": "i802",
+   "restaurantId": "r8",
+   "name": "Chocolate Brownie",
+   "description": "Fudgy brownie with chocolate sauce",
+   "price": 150,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "dessert",
+    "sweet",
+    "chocolate"
+   ],
+   "category": "Desserts"
+  },
+  {
+   "id": "i803",
+   "restaurantId": "r8",
+   "name": "Rasmalai (2 pcs)",
+   "description": "Soft paneer discs in saffron cardamom milk",
+   "price": 130,
+   "veg": true,
+   "spiceLevel": 0,
+   "tags": [
+    "dessert",
+    "sweet",
+    "indian"
+   ],
+   "category": "Desserts"
+  }
+ ]
 }

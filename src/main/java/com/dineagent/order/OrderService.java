@@ -5,6 +5,8 @@ import com.dineagent.catalog.CatalogStore;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,6 +47,13 @@ public class OrderService {
 
     public Optional<Order> find(String orderId) {
         return Optional.ofNullable(orders.get(orderId));
+    }
+
+    public List<Order> forSession(String sessionId) {
+        return orders.values().stream()
+                .filter(o -> o.sessionId().equals(sessionId))
+                .sorted(Comparator.comparing(Order::placedAt).reversed())
+                .toList();
     }
 
     public Clock clock() {
