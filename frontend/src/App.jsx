@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { api } from "./api.js";
+import { api, subscribeToSession } from "./api.js";
+import { payWithRazorpay } from "./payments.js";
 import Header from "./components/Header.jsx";
 import Home from "./components/Home.jsx";
 import RestaurantPage from "./components/RestaurantPage.jsx";
@@ -36,6 +37,7 @@ export default function App() {
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [assistantSeed, setAssistantSeed] = useState(null);
   const [toast, setToast] = useState(null);
+  const [liveOrders, setLiveOrders] = useState({});
 
   useEffect(() => {
     const onHash = () => { setRoute(parseRoute()); window.scrollTo(0, 0); };
@@ -47,6 +49,12 @@ export default function App() {
     api.info().then(setInfo).catch(() => setInfo({ offline: true }));
     api.cart(sessionId).then(setCart).catch(() => {});
   }, [sessionId]);
+
+  // Real-time: the server pushes cart changes (from any tab or from the AI) and live order status.
+  useEffect(() => subscribeToSession(sessionId, {
+    onCart: setCart,
+    onOrder: (o) => setLiveOrders((all) => ({ ...all, [o.orderId]: o })),
+  }), [sessionId]);
 
   const notify = useCallback((text, kind = "ok") => {
     setToast({ text, kind, at: Date.now() });
@@ -68,12 +76,21 @@ export default function App() {
     quantityOf: (itemId) => cart?.items?.find((i) => i.itemId === itemId)?.quantity ?? 0,
   };
 
+  /** Online payment if Razorpay is configured, otherwise pay on delivery. Returns the placed order. */
+  const checkout = async () => {
+    const order = info?.paymentsEnabled ? await payWithRazorpay(sessionId) : await api.placeOrder(sessionId);
+    setLiveOrders((all) => ({ ...all, [order.orderId]: order }));
+    setCart(await api.cart(sessionId));
+    window.location.hash = `#/order/${order.orderId}`;
+    return order;
+  };
+
   const askAssistant = (text) => {
     setAssistantSeed({ text, at: Date.now() });
     setAssistantOpen(true);
   };
 
-  const ctx = { sessionId, cart, cartActions, notify, askAssistant, setCart };
+  const ctx = { sessionId, cart, cartActions, notify, askAssistant, setCart, info, liveOrders, checkout };
   let page;
   switch (route.page) {
     case "restaurant": page = <RestaurantPage id={route.id} {...ctx} />; break;
@@ -102,7 +119,7 @@ export default function App() {
         </button>
       )}
       <Assistant open={assistantOpen} seed={assistantSeed} sessionId={sessionId} info={info}
-                 onClose={() => setAssistantOpen(false)} onCart={setCart} />
+                 onClose={() => setAssistantOpen(false)} onCart={setCart} checkout={checkout} notify={notify} />
 
       {toast && <div className={`toast ${toast.kind}`} role="status">{toast.text}</div>}
     </>

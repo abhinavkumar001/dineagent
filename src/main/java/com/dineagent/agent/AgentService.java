@@ -7,6 +7,7 @@ import com.dineagent.llm.LlmReply;
 import com.dineagent.llm.ToolCall;
 import com.dineagent.llm.ToolResult;
 import com.dineagent.order.OrderService;
+import com.dineagent.realtime.SessionEvents;
 import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 /**
  * The agent loop (ReAct style):
@@ -40,19 +42,36 @@ public class AgentService {
     private final ToolRegistry tools;
     private final SessionStore sessions;
     private final OrderService orders;
+    private final SessionEvents events;
     private final int maxSteps;
     private final ExecutorService toolPool = Executors.newFixedThreadPool(4);
 
     public AgentService(LlmClient llm, ToolRegistry tools, SessionStore sessions, OrderService orders,
-                        @Value("${app.agent.max-steps:6}") int maxSteps) {
+                        SessionEvents events, @Value("${app.agent.max-steps:6}") int maxSteps) {
         this.llm = llm;
         this.tools = tools;
         this.sessions = sessions;
         this.orders = orders;
+        this.events = events;
         this.maxSteps = maxSteps;
     }
 
     public ChatResponse chat(String sessionId, String message) {
+        return chat(sessionId, message, step -> { });
+    }
+
+    /** onStep is called the moment each tool call finishes, for live progress in the UI. */
+    public ChatResponse chat(String sessionId, String message, Consumer<TraceStep> onStep) {
+        ChatResponse response = runTurn(sessionId, message, onStep);
+        // Keep every open tab in sync with what the agent did.
+        events.cartChanged(response.sessionId());
+        if (response.order() != null && response.trace().stream().anyMatch(t -> t.tool().equals("place_order") && !t.error())) {
+            orders.find(String.valueOf(response.order().get("orderId"))).ifPresent(events::orderChanged);
+        }
+        return response;
+    }
+
+    private ChatResponse runTurn(String sessionId, String message, Consumer<TraceStep> onStep) {
         AgentSession session = sessions.getOrCreate(sessionId);
         synchronized (session) {
             long start = System.currentTimeMillis();
@@ -87,7 +106,7 @@ public class AgentService {
                         break;
                     }
                     session.add(ChatMessage.model(r.text(), r.toolCalls(), r.raw()));
-                    List<ToolResult> results = runTools(session, r.toolCalls(), calls, trace);
+                    List<ToolResult> results = runTools(session, r.toolCalls(), calls, trace, onStep);
                     results.forEach(tr -> toolResults.add(Map.of("tool", tr.name(), "result", tr.result())));
                     session.add(ChatMessage.tools(results));
                 }
@@ -102,7 +121,8 @@ public class AgentService {
     }
 
     /** Runs all tool calls from one LLM turn in parallel; results keep the original order. */
-    private List<ToolResult> runTools(AgentSession session, List<ToolCall> calls, int step, List<TraceStep> trace) {
+    private List<ToolResult> runTools(AgentSession session, List<ToolCall> calls, int step, List<TraceStep> trace,
+                                      Consumer<TraceStep> onStep) {
         List<CompletableFuture<ToolResult>> futures = new ArrayList<>();
         for (ToolCall call : calls) {
             futures.add(CompletableFuture.supplyAsync(() -> {
@@ -119,9 +139,15 @@ public class AgentService {
                     result = Map.of("error", "Tool failed: " + e.getMessage(), "summary", "tool error");
                     error = true;
                 }
+                TraceStep traceStep = new TraceStep(step, call.name(), call.args(), String.valueOf(result.get("summary")),
+                        System.currentTimeMillis() - t0, error);
                 synchronized (trace) {
-                    trace.add(new TraceStep(step, call.name(), call.args(), String.valueOf(result.get("summary")),
-                            System.currentTimeMillis() - t0, error));
+                    trace.add(traceStep);
+                }
+                try {
+                    onStep.accept(traceStep);
+                } catch (RuntimeException ignored) {
+                    // a slow or closed stream must never break the agent
                 }
                 return new ToolResult(call.name(), result);
             }, toolPool));
@@ -140,7 +166,7 @@ public class AgentService {
     private ChatResponse respond(AgentSession session, String reply, List<TraceStep> trace, int calls, long start,
                                  int in, int out, List<Map<String, Object>> toolResults) {
         Map<String, Object> order = session.lastOrderId() == null ? null
-                : orders.find(session.lastOrderId()).map(o -> Views.order(o, orders.clock())).orElse(null);
+                : orders.find(session.lastOrderId()).map(o -> orders.view(o)).orElse(null);
         return new ChatResponse(session.id(), reply, trace, Views.cart(session.cart()), order, llm.name(), calls,
                 System.currentTimeMillis() - start, in, out, toolResults);
     }
@@ -151,7 +177,7 @@ public class AgentService {
         m.put("sessionId", session.id());
         m.put("cart", Views.cart(session.cart()));
         m.put("order", session.lastOrderId() == null ? null
-                : orders.find(session.lastOrderId()).map(o -> Views.order(o, orders.clock())).orElse(null));
+                : orders.find(session.lastOrderId()).map(o -> orders.view(o)).orElse(null));
         return m;
     }
 

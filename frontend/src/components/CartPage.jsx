@@ -1,18 +1,17 @@
 import { useState } from "react";
-import { api, rupees } from "../api.js";
+import { rupees } from "../api.js";
 
-export default function CartPage({ sessionId, cart, cartActions, setCart, notify }) {
+export default function CartPage({ cart, cartActions, notify, info, checkout }) {
   const [placing, setPlacing] = useState(false);
   const items = cart?.items ?? [];
+  const online = info?.paymentsEnabled;
 
   const place = async () => {
     setPlacing(true);
     try {
-      const order = await api.placeOrder(sessionId);
-      setCart(await api.cart(sessionId));
-      window.location.hash = `#/order/${order.orderId}`;
+      await checkout();
     } catch (e) {
-      notify(e.message, "error");
+      notify(e.message, e.message === "Payment cancelled" ? "ok" : "error");
     } finally {
       setPlacing(false);
     }
@@ -59,8 +58,12 @@ export default function CartPage({ sessionId, cart, cartActions, setCart, notify
         <div className="bill-line"><span>Delivery fee</span><span>{cart.deliveryFee ? rupees(cart.deliveryFee) : "FREE"}</span></div>
         <div className="bill-line total"><span>To pay</span><span>{rupees(cart.toPay)}</span></div>
         <button className="btn primary block" onClick={place} disabled={placing}>
-          {placing ? "Placing order…" : `Place order · ${rupees(cart.toPay)}`}
+          {placing ? (online ? "Waiting for payment…" : "Placing order…")
+            : online ? `Pay ${rupees(cart.toPay)}` : `Place order · ${rupees(cart.toPay)}`}
         </button>
+        <p className="muted small pay-note">
+          {online ? <>Secure payment by <b>Razorpay</b> (test mode). UPI, cards and net banking.</> : "Pay on delivery. Add Razorpay keys to enable online payment."}
+        </p>
         <p className="muted small">Cancel within 60 seconds for a full refund.</p>
       </section>
     </div>

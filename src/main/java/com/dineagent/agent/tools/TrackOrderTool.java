@@ -35,8 +35,8 @@ public class TrackOrderTool implements Tool {
         }
         return orders.find(id)
                 .filter(o -> o.sessionId().equals(session.id())) // customers can only track their own orders
-                .<Map<String, Object>>map(o -> Map.of("ok", true, "order", Views.order(o, orders.clock()),
-                        "summary", o.id() + " is " + o.status(orders.clock())))
+                .<Map<String, Object>>map(o -> Map.of("ok", true, "order", orders.view(o),
+                        "summary", o.id() + " is " + orders.status(o)))
                 .orElse(Map.of("ok", false, "error", "No order " + id + " for this customer.", "summary", "order not found"));
     }
 }

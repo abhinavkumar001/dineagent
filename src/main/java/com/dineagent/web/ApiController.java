@@ -9,6 +9,7 @@ import com.dineagent.catalog.MenuSearchService;
 import com.dineagent.eval.EvalReport;
 import com.dineagent.eval.EvalService;
 import com.dineagent.llm.LlmClient;
+import com.dineagent.payment.PaymentService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -30,9 +31,11 @@ public class ApiController {
     private final MenuSearchService search;
     private final ToolRegistry tools;
     private final CatalogStore catalog;
+    private final PaymentService payments;
 
     public ApiController(AgentService agent, EvalService eval, LlmClient llm, MenuSearchService search,
-                         ToolRegistry tools, CatalogStore catalog) {
+                         ToolRegistry tools, CatalogStore catalog, PaymentService payments) {
+        this.payments = payments;
         this.agent = agent;
         this.eval = eval;
         this.llm = llm;
@@ -62,6 +65,7 @@ public class ApiController {
         m.put("restaurants", catalog.restaurants().size());
         m.put("dishes", catalog.items().size());
         m.put("evalCases", eval.cases().size());
+        m.put("paymentsEnabled", payments.enabled());
         return m;
     }
 

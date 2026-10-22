@@ -1,4 +1,5 @@
-import { dishEmoji, rupees } from "../api.js";
+import { rupees } from "../api.js";
+import { DishImage } from "./DishArt.jsx";
 
 export function VegMark({ veg }) {
   return <span className={`vegmark ${veg ? "" : "non"}`} role="img" aria-label={veg ? "Veg" : "Non-veg"} />;
@@ -35,7 +36,7 @@ export function DishRow({ item, restaurant, cartActions }) {
         <p className="dish-desc">{item.description}</p>
       </div>
       <div className="dish-media">
-        <div className="dish-thumb" aria-hidden="true">{dishEmoji(item)}</div>
+        <DishImage item={item} className="dish-thumb" />
         <AddButton item={item} cartActions={cartActions} />
       </div>
     </div>

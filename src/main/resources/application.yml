@@ -14,3 +14,13 @@ app:
     # Guardrail: most tool calls the agent may make for one user message
     max-steps: 6
   timezone: Asia/Kolkata
+  order:
+    # 1 = real time; 10 = a 30-minute delivery plays out in 3 minutes (good for demos)
+    time-scale: ${ORDER_TIME_SCALE:10}
+  realtime:
+    order-tick-ms: 3000
+  razorpay:
+    # Test-mode keys from dashboard.razorpay.com -> Account & Settings -> API Keys. Leave empty for pay on delivery.
+    key-id: ${RAZORPAY_KEY_ID:}
+    key-secret: ${RAZORPAY_KEY_SECRET:}
+    webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}

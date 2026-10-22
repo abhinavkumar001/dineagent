@@ -32,10 +32,38 @@ export const api = {
   order: (sid, id) => request(`/api/orders/${enc(id)}?sessionId=${enc(sid)}`),
   chat: (sid, message) => request("/api/chat", json("POST", { sessionId: sid, message })),
   runEval: () => request("/api/eval?judge=true", { method: "POST" }),
+  createPayment: (sid) => request("/api/payments/order", json("POST", { sessionId: sid })),
+  verifyPayment: (body) => request("/api/payments/verify", json("POST", body)),
 };
+
+/** Live cart + order updates (Server-Sent Events). Returns a function that closes the stream. */
+export function subscribeToSession(sid, { onCart, onOrder }) {
+  const es = new EventSource(`${BASE}/api/events/${enc(sid)}`);
+  es.addEventListener("cart", (e) => onCart(JSON.parse(e.data)));
+  es.addEventListener("order", (e) => onOrder(JSON.parse(e.data)));
+  return () => es.close();
+}
+
+/** Chat with live progress: onStep for each tool call as it happens, then onDone with the full response. */
+export function chatStream(sid, message, { onStep, onDone, onError }) {
+  const es = new EventSource(`${BASE}/api/chat/stream?sessionId=${enc(sid)}&message=${enc(message)}`);
+  let finished = false;
+  es.addEventListener("step", (e) => onStep(JSON.parse(e.data)));
+  es.addEventListener("done", (e) => { finished = true; es.close(); onDone(JSON.parse(e.data)); });
+  es.addEventListener("error", (e) => {
+    if (finished) return;
+    finished = true;
+    es.close();
+    let msg = "Lost connection to the assistant. Please try again.";
+    try { if (e.data) msg = JSON.parse(e.data).error || msg; } catch { /* not JSON */ }
+    onError(new Error(msg));
+  });
+  return () => es.close();
+}
 
 export const rupees = (n) => "₹" + Number(n || 0).toLocaleString("en-IN");
 
+// Kept for small icons; dishes themselves use drawn illustrations (components/DishArt.jsx).
 const DISH_EMOJI = [
   ["biryani", "🍚"], ["pizza", "🍕"], ["pasta", "🍝"], ["noodles", "🍜"], ["momos", "🥟"], ["soup", "🍲"],
   ["salad", "🥗"], ["wrap", "🌯"], ["dosa", "🥞"], ["idli", "🍘"], ["coffee", "☕"], ["dessert", "🍨"],

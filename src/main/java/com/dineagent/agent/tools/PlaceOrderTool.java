@@ -6,6 +6,7 @@ import com.dineagent.agent.Views;
 import com.dineagent.llm.ToolSpec;
 import com.dineagent.order.Order;
 import com.dineagent.order.OrderService;
+import com.dineagent.payment.PaymentService;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
@@ -29,9 +30,11 @@ public class PlaceOrderTool implements Tool {
             Pattern.CASE_INSENSITIVE);
 
     private final OrderService orders;
+    private final PaymentService payments;
 
-    public PlaceOrderTool(OrderService orders) {
+    public PlaceOrderTool(OrderService orders, PaymentService payments) {
         this.orders = orders;
+        this.payments = payments;
     }
 
     static boolean customerConfirmed(String message) {
@@ -65,10 +68,20 @@ public class PlaceOrderTool implements Tool {
             out.put("summary", "blocked: waiting for customer confirmation");
             return out;
         }
-        Order order = orders.place(session.id(), session.cart());
+        if (payments.enabled()) {
+            // The agent can never pay: online payment needs the customer to complete Razorpay Checkout themselves.
+            int total = session.cart().total();
+            out.put("ok", false);
+            out.put("status", "PAYMENT_REQUIRED");
+            out.put("toPay", total + OrderService.deliveryFeeFor(total));
+            out.put("instruction", "Tell the customer to tap the Pay button to complete the order securely with Razorpay.");
+            out.put("summary", "waiting for customer to pay");
+            return out;
+        }
+        Order order = orders.place(session.id(), session.cart(), "PAY_ON_DELIVERY", null);
         session.setLastOrderId(order.id());
         out.put("ok", true);
-        out.put("order", Views.order(order, orders.clock()));
+        out.put("order", orders.view(order));
         out.put("summary", "order " + order.id() + " placed, ₹" + order.total());
         return out;
     }

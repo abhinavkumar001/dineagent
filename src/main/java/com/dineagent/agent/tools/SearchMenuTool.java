@@ -54,6 +54,7 @@ public class SearchMenuTool implements Tool {
             d.put("deliveryMinutes", r.restaurant().deliveryMinutes());
             d.put("rating", r.restaurant().rating());
             d.put("description", r.item().description());
+            d.put("tags", r.item().tags());
             return d;
         }).toList();
 

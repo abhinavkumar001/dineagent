@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api, CUISINES, cuisineEmoji, rupees } from "../api.js";
 import { Stars } from "./Bits.jsx";
+import { DishImage } from "./DishArt.jsx";
 
 const AI_IDEAS = [
   "Light veg dinner under ₹250",
@@ -60,8 +61,9 @@ export default function Home({ askAssistant }) {
         <div className="restaurant-grid">
           {restaurants?.map((r) => (
             <a key={r.id} className="restaurant-card" href={`#/restaurant/${r.id}`}>
-              <div className={`r-cover c-${r.cuisine.replace(/\s/g, "").toLowerCase()}`}>
-                <span aria-hidden="true">{cuisineEmoji(r.cuisine)}</span>
+              <div className="r-cover">
+                {r.coverItem ? <DishImage item={r.coverItem} className="cover-img" />
+                  : <span className="cover-emoji" aria-hidden="true">{cuisineEmoji(r.cuisine)}</span>}
                 {r.offer && <b className="offer">{r.offer}</b>}
               </div>
               <h3>{r.name}</h3>

@@ -105,8 +105,12 @@ public class EvalService {
             }
 
             // 3. order guardrail
-            boolean placed = allToolResults.stream().anyMatch(r -> "place_order".equals(r.get("tool"))
-                    && Boolean.TRUE.equals(((Map<?, ?>) r.get("result")).get("ok")));
+            // With Razorpay on, a confirmed order stops at PAYMENT_REQUIRED (the customer pays), which counts as placed.
+            boolean placed = allToolResults.stream().anyMatch(r -> {
+                if (!"place_order".equals(r.get("tool"))) return false;
+                Map<?, ?> result = (Map<?, ?>) r.get("result");
+                return Boolean.TRUE.equals(result.get("ok")) || "PAYMENT_REQUIRED".equals(result.get("status"));
+            });
             if (c.expectOrderPlaced() != null) {
                 if (!c.expectOrderPlaced()) {
                     guardrailCases++;

@@ -212,3 +212,32 @@ h1, h2, h3, p { margin: 0; }
   .ask-fab { bottom: 84px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+
+/* ---------- dish images ---------- */
+.dish-art, .dish-photo { display: block; object-fit: cover; }
+.dish-thumb.dish-art, .dish-thumb.dish-photo { width: 150px; height: 130px; border-radius: 14px; }
+.r-cover { background: var(--wash); }
+.r-cover .cover-img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.r-cover .cover-emoji { font-size: 64px; }
+.a-thumb { width: 44px; height: 44px; border-radius: 10px; }
+.a-dish { grid-template-columns: 44px 1fr auto; }
+@media (max-width: 860px) { .dish-thumb.dish-art, .dish-thumb.dish-photo { width: 118px; height: 104px; } }
+
+/* ---------- payments ---------- */
+.pay-btn { align-self: flex-start; }
+.pay-note b { color: var(--ink-2); }
+
+/* ---------- live tracking ---------- */
+.live-dot { display: inline-flex; align-items: center; gap: 5px; margin-left: 8px; color: var(--chilli); font-weight: 700; font-size: 12px; }
+.live-dot::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--chilli); animation: pulse 1.6s infinite; }
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: .3; } 100% { opacity: 1; } }
+.route { display: flex; align-items: center; gap: 10px; margin: 4px 0 24px; }
+.route-end { font-size: 22px; }
+.route-track { position: relative; flex: 1; height: 8px; border-radius: 4px; background: var(--line); }
+.route-fill { height: 100%; border-radius: 4px; background: var(--leaf); transition: width 1s linear; }
+.rider { position: absolute; top: -17px; transform: translateX(-50%); font-size: 24px; transition: left 1s linear; }
+.live-steps { list-style: none; margin: 0; padding: 0; font-style: normal; display: grid; gap: 4px; }
+.live-steps li::before { content: "✓ "; color: var(--leaf); font-weight: 700; }
+.live-steps li.err::before { content: "! "; color: var(--chilli); }
+.live-steps li.pending::before { content: "… "; color: var(--turmeric); }
+@media (prefers-reduced-motion: reduce) { .live-dot::before { animation: none; } .rider, .route-fill { transition: none; } }

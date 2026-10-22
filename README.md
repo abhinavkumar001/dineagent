@@ -8,6 +8,15 @@ It also answers policy questions (refunds, fees, cancellation) with retrieval-au
 The agent loop, tool calling, hybrid retrieval and evaluation are written by hand (no LangChain), so every part
 can be explained.
 
+## Features
+
+- **Food-delivery app**: restaurants, menus with dish illustrations, search, cart with bill details, checkout, order history.
+- **AI agent** (Gemini) in a side drawer: finds dishes, fills the shared cart, gets the order ready. You confirm and pay yourself.
+- **Razorpay payments (test mode)**: amount computed on the server, HMAC signature verified before the order is created,
+  webhook as a backup, one order per payment.
+- **Real-time** with Server-Sent Events: live order tracking (status, minutes left, rider progress), cart synced across
+  tabs and with the AI agent, and the agent's tool calls streamed live while it works.
+
 ## What it shows
 
 | Gen AI concept | Where |
@@ -40,6 +49,16 @@ can be explained.
    Or in a terminal: `set GEMINI_API_KEY=your-key` (Windows) / `export GEMINI_API_KEY=your-key` (Mac/Linux),
    then `mvn spring-boot:run`.
 3. Check that http://localhost:8080/api/info shows `"llmConfigured": true`.
+
+**Optional: Razorpay test payments**
+1. Sign up at dashboard.razorpay.com, stay in **Test Mode**, and generate API keys (Account & Settings → API Keys).
+2. Add `RAZORPAY_KEY_ID=rzp_test_...` and `RAZORPAY_KEY_SECRET=...` to the backend's environment variables and restart.
+3. At checkout, pay with Razorpay's test details (for UPI use `success@razorpay`; test cards are listed in Razorpay's docs).
+   No real money moves. Without keys, the app uses pay on delivery.
+4. Webhook (optional): set `RAZORPAY_WEBHOOK_SECRET`, expose the backend (e.g. with ngrok) and add
+   `https://<your-url>/api/payments/webhook` in the Razorpay dashboard for the `payment.captured` event.
+
+**Demo speed:** `ORDER_TIME_SCALE=10` (default) makes a 30-minute delivery play out in 3 minutes. Set it to `1` for real time.
 
 **2. Frontend (React, port 5173)**
 ```
@@ -79,11 +98,39 @@ src/main/java/com/dineagent/
   cart/ order/
   eval/       test cases, metrics, LLM-as-judge
   web/        REST API and CORS config
-frontend/     React app: chat, dish cards, cart, order status, agent trace, evaluation panel
+  payment/    Razorpay client, signature verification, webhook
+  realtime/   Server-Sent Events: live cart, order tracking, streaming agent steps
+frontend/     React app: home, restaurant menus, dish illustrations, cart, Razorpay checkout, live tracking, AI drawer
 ```
 
+## Payment flow (Razorpay)
+```
+React                         Spring Boot                          Razorpay
+  | Pay ₹250 ----------------> | POST /api/payments/order             |
+  |                            |   amount = cart total (server-side)  |
+  |                            | ----------- create order ----------> |
+  | <------ order_id, key_id --|                                      |
+  | opens Checkout, user pays ------------------------------------->  |
+  | <-------------------------- payment_id + signature -------------- |
+  | POST /api/payments/verify  |                                      |
+  |                            | HMAC_SHA256(order_id|payment_id, secret) == signature ?
+  |                            | yes -> place food order (once only)  |
+  | <------ order (live) ------|                                      |
+  |                            | <---- webhook payment.captured ----- |  (backup if the tab was closed)
+```
+
+## Real-time (Server-Sent Events)
+- `GET /api/events/{sessionId}` pushes `cart` and `order` events; a scheduler sends live order progress every 3 seconds.
+- `GET /api/chat/stream?sessionId=&message=` streams each agent tool call as a `step` event, then `done`.
+- SSE is one-way server→browser over plain HTTP with automatic reconnects, which is all tracking needs; WebSockets would
+  only be needed for two-way messaging such as chat between rider and customer.
+
 ## API
-`POST /api/chat {sessionId, message}` · `GET /api/session/{id}` · `GET /api/info` · `POST /api/eval?judge=true`
+Store: `GET /api/restaurants` · `GET /api/restaurants/{id}` · `GET /api/search` · `GET/DELETE /api/cart/{sid}` ·
+`POST /api/cart/{sid}/items` · `PUT /api/cart/{sid}/items/{itemId}` · `POST /api/orders` · `GET /api/orders?sessionId=` · `GET /api/orders/{id}`
+Payments: `POST /api/payments/order` · `POST /api/payments/verify` · `POST /api/payments/webhook`
+Real-time: `GET /api/events/{sid}` · `GET /api/chat/stream`
+AI: `POST /api/chat` · `GET /api/info` · `POST /api/eval?judge=true`
 
 ## Limits and next steps
 Data is a demo catalog of 8 restaurants kept in memory. Next steps would be PostgreSQL with pgvector,
